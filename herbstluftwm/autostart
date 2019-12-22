@@ -1,0 +1,188 @@
+#!/bin/bash
+
+# source herbstclient function
+rpath="$HOME/.config/herbstluftwm"
+. $rpath/hlc_fn.sh
+
+cmds=()
+
+# chaining herbstclient calls together
+HCC() {
+	cmds+=(";" "$@")
+}
+
+HCC emit_hook reload
+
+# clear settings
+HCC keyunbind --all
+HCC mouseunbind --all
+HCC unrule -F
+
+Mod=Mod4   # Use the super key as the main modifier
+
+# create six tags
+tag_names=( {1..6} )
+tag_keys=( {1..6} 0 )
+
+HCC rename default "${tag_names[0]}" || true
+for i in "${!tag_names[@]}" ; do
+    HCC add "${tag_names[$i]}"
+    key="${tag_keys[$i]}"
+    if ! [ -z "$key" ] ; then
+        HCC keybind "$Mod-$key" use_index "$i"
+        HCC keybind "$Mod-Shift-$key" move_index "$i"
+    fi
+done
+
+# keybindings
+HCC keybind $Mod-Shift-x quit
+HCC keybind $Mod-Shift-r reload
+HCC keybind $Mod-Shift-c close
+HCC keybind $Mod-Return spawn st
+HCC keybind $Mod-d spawn rofi -show run
+HCC keybind $Mod-l spawn xtrlock -f
+# portrait mode
+HCC keybind $Mod-Shift-p spawn sh $rpath/portrait.sh
+# landscape mode
+HCC keybind $Mod-Shift-l spawn sh $rpath/landscape.sh
+# center a window in tiling mode
+HCC keybind $Mod-Shift-o spawn sh $rpath/hometag.sh
+# collapse or uncollapse gaps and frame border
+HCC keybind $Mod-Shift-f spawn sh $rpath/focus_mode.sh
+# spawn three windows in floating mode
+HCC keybind $Mod-Shift-s spawn st $rpath/stack.sh
+
+# basic movement
+# focusing clients
+HCC keybind $Mod-Left 	or , focus left , focus_edge right
+HCC keybind $Mod-Down 	or , focus down , focus_edge up
+HCC keybind $Mod-Up 	or , focus up , focus_edge down
+HCC keybind $Mod-Right 	or , focus right , focus_edge left
+
+# moving clients
+HCC keybind $Mod-Shift-Left  shift left
+HCC keybind $Mod-Shift-Down  shift down
+HCC keybind $Mod-Shift-Up    shift up
+HCC keybind $Mod-Shift-Right shift right
+
+# splitting frames
+# create an empty frame at the specified direction
+HCC keybind $Mod-u       split   bottom  0.5
+HCC keybind $Mod-o       split   right   0.5
+# let the current frame explode into subframes
+HCC keybind $Mod-Control-space split explode
+
+# resizing frames
+resizestep=0.01
+HCC keybind $Mod-Control-h       resize left +$resizestep
+HCC keybind $Mod-Control-j       resize down +$resizestep
+HCC keybind $Mod-Control-k       resize up +$resizestep
+HCC keybind $Mod-Control-l       resize right +$resizestep
+HCC keybind $Mod-Control-Left    resize left +$resizestep
+HCC keybind $Mod-Control-Down    resize down +$resizestep
+HCC keybind $Mod-Control-Up      resize up +$resizestep
+HCC keybind $Mod-Control-Right   resize right +$resizestep
+
+# cycle through tags
+HCC keybind $Mod-period use_index +1 --skip-visible
+HCC keybind $Mod-comma  use_index -1 --skip-visible
+
+# layouting
+HCC keybind $Mod-r remove
+HCC keybind $Mod-space cycle_layout 1
+HCC keybind $Mod-s floating toggle
+HCC keybind $Mod-f fullscreen toggle
+HCC keybind $Mod-p pseudotile toggle
+
+# mouse
+HCC mousebind $Mod-Button1 move
+HCC mousebind $Mod-Button3 zoom
+HCC mousebind $Mod-Button2 resize
+
+# focus
+HCC keybind $Mod-BackSpace   cycle_monitor
+HCC keybind $Mod-Tab         cycle_all +1
+HCC keybind $Mod-Shift-Tab   cycle_all -1
+HCC keybind $Mod-c cycle
+HCC keybind $Mod-i jumpto urgent
+
+# theme
+HCC attr theme.tiling.reset 1
+HCC attr theme.floating.reset 1
+# main border color
+HCC set frame_border_active_color '#ab57ff'
+HCC set frame_border_normal_color '#2B2B2B'
+HCC set frame_bg_normal_color '#171717'
+HCC set frame_bg_active_color '#379BA6'
+HCC set frame_border_width 10
+HCC set always_show_frame 0
+HCC set frame_bg_transparent 1
+HCC set frame_transparent_width 0
+HCC set frame_gap 40
+HCC set frame_active_opacity 50
+HCC set frame_normal_opacity 50
+
+HCC attr theme.active.color '#7174FF'
+HCC attr theme.normal.color '#171717'
+HCC attr theme.urgent.color orange
+HCC attr theme.inner_width 0
+HCC attr theme.inner_color black
+# this is the window border
+HCC attr theme.border_width 5
+HCC attr theme.floating.border_width 2
+HCC attr theme.floating.outer_width 1
+HCC attr theme.floating.outer_color '#3b63b3'
+HCC attr theme.active.inner_color '#ab57ff'
+HCC attr theme.active.outer_color '#ab57ff'
+HCC attr theme.background_color '#171717'
+
+HCC set window_gap 0
+HCC set frame_padding 0
+HCC set smart_window_surroundings 1
+HCC set smart_frame_surroundings 1
+HCC set mouse_recenter_gap 0
+
+# rules
+HCC rule focus=on # normally focus new clients
+HCC rule windowtype~'_NET_WM_WINDOW_TYPE_(DIALOG|UTILITY|SPLASH)' pseudotile=on
+HCC rule windowtype='_NET_WM_WINDOW_TYPE_DIALOG' focus=on
+HCC rule windowtype~'_NET_WM_WINDOW_TYPE_(NOTIFICATION|DOCK|DESKTOP)' manage=off
+
+HC chain "${cmds[@]}"
+unset cmds
+
+# unlock, just to be sure
+HC unlock
+
+HC set tree_style '╾│ ├└╼─┐'
+
+# pad to make room for bar
+# pad MONITOR [PADUP [PADRIGHT [PADDOWN [PADLEFT]]]]
+HC pad 0 30 0 0 0
+
+# set wallpaper
+eval $(~/.fehbg)
+
+# launch and bg compositor unless active
+[ -z $(pidof compton) ] && \
+compton -b --config "$rpath/../compton/compton.conf"
+
+# launch and bg (<- set in config) conky unless active
+[ -z $(pidof conky) ] && conky
+
+# manage background procs
+{
+#	start dzen panel
+	$($rpath/wsi.pl -x 10 -y 7 -w 14 -h 13 -s 24) &
+	pids=${pids:-$!}
+#	background fx (blur, tint or desaturation)
+	$($rpath/bg_fx.sh) &
+	pids+=" $!"
+#	wait for exit hooks
+	herbstclient -w '(quit_panel|reload)'
+#	reap abandoned procs
+	printf '%s\n' "$pids" | tr ' ' '\n' | \
+	while read pid; do
+		kill $(pstree $pid -p -a -l | cut -d',' -f2 | cut -d' ' -f1)
+	done
+} 2>/dev/null &
