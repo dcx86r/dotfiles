@@ -21,7 +21,7 @@ get_velocity()
     check=$(($vel/1024))
     unit="kB/s"
     outpt=$(printf "scale=2;%s/1024\n" $vel | bc)
-    printf "%8.2f" $outpt | sed 's/ /\${color 7174FF}-\${color}/g'
+    printf "%8.2f" $outpt | sed 's/ /\${color 6b6b6b}-\${color}/g'
     printf " %4s" $unit
 }
 

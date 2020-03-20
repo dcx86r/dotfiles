@@ -34,12 +34,14 @@ for i in "${!tag_names[@]}" ; do
     fi
 done
 
-# keybindings
 HCC keybind $Mod-Shift-x quit
 HCC keybind $Mod-Shift-r reload
 HCC keybind $Mod-Shift-c close
+# terminal
 HCC keybind $Mod-Return spawn st
+# menu
 HCC keybind $Mod-d spawn rofi -show run
+# lock
 HCC keybind $Mod-l spawn xtrlock -f
 # portrait mode
 HCC keybind $Mod-Shift-p spawn sh $rpath/portrait.sh
@@ -50,7 +52,12 @@ HCC keybind $Mod-Shift-o spawn sh $rpath/hometag.sh
 # collapse or uncollapse gaps and frame border
 HCC keybind $Mod-Shift-f spawn sh $rpath/focus_mode.sh
 # spawn three windows in floating mode
-HCC keybind $Mod-Shift-s spawn st $rpath/stack.sh
+HCC keybind $Mod-Shift-k spawn st $rpath/stack.sh
+# take a screenshot
+HCC keybind $Mod-Shift-s spawn scrot -q 100
+# show weather forecast in notification window
+HCC keybind $Mod-Shift-w spawn notify-send -t 60000 \
+"Forecast" "$(perl $rpath/../conky/weather.pl)"
 
 # basic movement
 # focusing clients
@@ -109,31 +116,31 @@ HCC keybind $Mod-i jumpto urgent
 # theme
 HCC attr theme.tiling.reset 1
 HCC attr theme.floating.reset 1
-# main border color
-HCC set frame_border_active_color '#ab57ff'
-HCC set frame_border_normal_color '#2B2B2B'
+# frame border settings
+HCC set frame_border_active_color '#b66aff'
+HCC set frame_border_normal_color '#333366'
 HCC set frame_bg_normal_color '#171717'
-HCC set frame_bg_active_color '#379BA6'
+HCC set frame_bg_active_color '#669999'
 HCC set frame_border_width 10
 HCC set always_show_frame 0
 HCC set frame_bg_transparent 1
 HCC set frame_transparent_width 0
-HCC set frame_gap 40
+HCC set frame_gap 50
 HCC set frame_active_opacity 50
 HCC set frame_normal_opacity 50
 
-HCC attr theme.active.color '#7174FF'
-HCC attr theme.normal.color '#171717'
-HCC attr theme.urgent.color orange
-HCC attr theme.inner_width 0
-HCC attr theme.inner_color black
-# this is the window border
-HCC attr theme.border_width 5
-HCC attr theme.floating.border_width 2
-HCC attr theme.floating.outer_width 1
-HCC attr theme.floating.outer_color '#3b63b3'
-HCC attr theme.active.inner_color '#ab57ff'
-HCC attr theme.active.outer_color '#ab57ff'
+HCC attr theme.active.color '#9A6CFF'
+HCC attr theme.normal.color '#3366cc'
+HCC attr theme.urgent.color '#dd0098'
+HCC attr theme.inner_width 2
+HCC attr theme.inner_color '#9A6CFF'
+# window border settings
+HCC attr theme.border_width 4
+HCC attr theme.floating.border_width 8
+HCC attr theme.floating.outer_width 4
+HCC attr theme.floating.outer_color '#181818'
+HCC attr theme.active.inner_color '#0099cc'
+HCC attr theme.active.outer_color '#b66aff'
 HCC attr theme.background_color '#171717'
 
 HCC set window_gap 0
@@ -161,28 +168,14 @@ HC set tree_style '╾│ ├└╼─┐'
 HC pad 0 30 0 0 0
 
 # set wallpaper
-eval $(~/.fehbg)
+setroot -sc '#333399' 2>/dev/null
 
 # launch and bg compositor unless active
 [ -z $(pidof compton) ] && \
-compton -b --config "$rpath/../compton/compton.conf"
+	compton -b --config "$rpath/../compton/compton.conf"
 
-# launch and bg (<- set in config) conky unless active
+# launch and bg (<- set in conky.conf) conky unless active
 [ -z $(pidof conky) ] && conky
 
-# manage background procs
-{
-#	start dzen panel
-	$($rpath/wsi.pl -x 10 -y 7 -w 14 -h 13 -s 24) &
-	pids=${pids:-$!}
-#	background fx (blur, tint or desaturation)
-	$($rpath/bg_fx.sh) &
-	pids+=" $!"
-#	wait for exit hooks
-	herbstclient -w '(quit_panel|reload)'
-#	reap abandoned procs
-	printf '%s\n' "$pids" | tr ' ' '\n' | \
-	while read pid; do
-		kill $(pstree $pid -p -a -l | cut -d',' -f2 | cut -d' ' -f1)
-	done
-} 2>/dev/null &
+# run workspace indicator panel and manage reloading
+dash "$rpath/killy.sh" &

@@ -41,9 +41,9 @@ sub chk_opts {
 
 sub setup {
 	my $cfgroot = "$ENV{HOME}/.config/herbstluftwm";
-	my @group = ("empty", "full", "urgent");
+	my @group = ("empty", "full", "urgent", "focused");
 	foreach (@group) {
-		cp("$cfgroot/icons/rubik-${_}.xpm", "/tmp/rubik-${_}.xpm")
+		cp("$cfgroot/icons/icon-${_}.xpm", "/tmp/icon-${_}.xpm")
 			|| error("copy failed: ", $!);
 	}
 }
@@ -56,16 +56,6 @@ sub get_tag_status {
 	return \@count;
 }
 
-# github.com/dcx86r/rubikon
-sub gen_icon {
-	my $icon = qx/rubikon/
-		|| error("couldn't exec rubikon: ", $!);
-	open(my $fh, ">", shift) 
-		|| error("couldn't open xpm file: ", $!);
-	print $fh $icon;
-	close $fh;
-}
-
 sub draw_bars {
 #	filehandles for dzen instances
 	my @bar_fh;
@@ -75,6 +65,7 @@ sub draw_bars {
 	my %dzen_args = (
 		'ta' => "l",
 		'sa' => "l",
+		'bg' => "#181818",
 		'x'  => $opts{x},
 		'y'  => $opts{y},
 		'w'  => $opts{w},
@@ -119,7 +110,7 @@ sub sender {
 		say { @{$fh_ref}[substr($_, 1)] } 
 			"^ca(1, herbstclient use "
 			. substr($_, 1)
-			. ")^i(/tmp/rubik-"
+			. ")^i(/tmp/icon-"
 			. $status->(substr($_, 0, 1))
 			. ".xpm)^ca()";
 	}
@@ -140,7 +131,6 @@ sub main {
 	while (defined($_ = <$status>)) {
 		chomp;
 		next if $_ !~ /tag_(changed|flags)/;
-		gen_icon("/tmp/rubik-focused.xpm") if $_ !~ /tag_flags/;
 		sender(get_tag_status(), $barsref);
 	}
 }
