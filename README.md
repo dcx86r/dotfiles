@@ -2,7 +2,7 @@
 
 ### February 2020
 
-![Screenshot](https://raw.githubusercontent.com/dcx86r/dotfiles/master/2019-12-22.jpg)
+![Screenshot](https://raw.githubusercontent.com/dcx86r/dotfiles/master/2020-02-07.jpg)
 
 ### December 2019
 
