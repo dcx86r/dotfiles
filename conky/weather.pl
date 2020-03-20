@@ -3,7 +3,7 @@
 # conky
 # -----
 # 15m interval
-# ${execi 900 /path/to/script/weather.pl}
+# ${execi 900 /path/to/script/weather.pl -c}
 
 # notify
 # ------
@@ -14,8 +14,9 @@ use v5.10;
 use LWP::Simple qw(get $ua);
 use XML::LibXML;
 use XML::LibXML::XPathContext;
+use List::MoreUtils qw(firstidx);
+use HTML::Strip;
 use Getopt::Std;
-use Data::Dumper;
 
 $Getopt::Std::STANDARD_HELP_VERSION = 1;
 getopts('c', \my %opts) || die 
@@ -38,7 +39,7 @@ net_error("no network connection") unless defined(my $bool = $ua->is_online);
 
 # local weather feed from Weather Canada
 my $feed;
-open(my $fh, "<", "location.txt") || die "can't open location.txt: $!";
+open(my $fh, "<", "/home/dc/.config/conky/location.txt") || die "can't open location.txt: $!";
 while (<$fh>) { chomp; $feed = $_; }
 close($fh) || die "can't close location.txt: $!";
 
@@ -60,13 +61,26 @@ if($@) {
 my $xpc = XML::LibXML::XPathContext->new($dom);
 $xpc->registerNs('Atom', 'http://www.w3.org/2005/Atom');
 
-# find and print just the node with current conditions
-my @current = $xpc->findnodes('//Atom:entry/Atom:title');
+my @forecast = $xpc->findnodes('//Atom:entry/Atom:title');
+my @current = $xpc->findnodes('//Atom:entry/Atom:summary');
+
+my $idx = firstidx { /CDATA/ } @current;
+die "Error finding current summary\n" unless ($idx >= 0); 
+
 if ($cur_temp) { 
-	my $str =  $current[1]->to_literal();
-	my @vals = split(/ /, $str);
-	splice(@vals, 0, 2);
-	print encode_utf8(join(' ', @vals));
-} else { prnt_all(\@current); }
+	my $str =  $current[$idx]->to_literal();
+	my $hs = HTML::Strip->new();
+	my $cleaned = $hs->parse($str);
+	$hs->eof;
+	my @vals = split(/\n/, $cleaned);
+	my $newstr;
+	foreach (@vals) {
+		$newstr = $_ if $_ =~ m/Temp/;
+	}
+	undef @vals;
+	@vals = split(/:/, $newstr);
+	$vals[-1] =~ s/^\s+|\s+$//g;
+	print encode_utf8($vals[-1]);
+} else { prnt_all(\@forecast); }
 
 exit;
