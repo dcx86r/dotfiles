@@ -1,5 +1,9 @@
 ## Dotfiles
 
+### April 2020
+
+![Screenshot](https://raw.githubusercontent.com/dcx86r/dotfiles/master/2020-04-12.jpg)
+
 ### February 2020
 
 ![Screenshot](https://raw.githubusercontent.com/dcx86r/dotfiles/master/2020-02-07.jpg)
@@ -12,26 +16,36 @@
 
 ```
 dotfiles
+├── bar
+│   ├── bar.pl
+│   └── Local
+│       ├── Date.pm
+│       └── NetStat.pm
 ├── compton
 │   └── compton.conf
-├── conky
-│   ├── lvscript.sh
-│   ├── netstats.sh
-│   ├── vol.sh
-│   ├── weather.pl
-│   └── xbtc.sh
 ├── dunst
 │   └── dunstrc
-└── herbstluftwm
-    ├── autostart
-    ├── focus_mode.sh
-    ├── hlc_fn.sh
-    ├── hometag.sh
-    ├── killy.sh
-    ├── landscape.sh
-    ├── portrait.sh
-    ├── stack.sh
-    └── wsi.pl
-
-4 directories, 16 files
+├── herbstluftwm
+│   ├── autostart
+│   ├── focus_mode.sh
+│   ├── hlc_fn.sh
+│   ├── hometag.sh
+│   ├── icons
+│   │   ├── cal.xbm
+│   │   ├── delta2.xbm
+│   │   ├── dn.xbm
+│   │   ├── snap.xbm
+│   │   ├── up.xbm
+│   │   ├── vol.xbm
+│   │   └── xbt.xbm
+│   ├── killy.sh
+│   ├── landscape.sh
+│   ├── portrait.sh
+│   ├── scrot.sh
+│   └── stack.sh
+└── scripts
+    ├── lvscript.sh
+    ├── vol.sh
+    ├── weather.pl
+    └── xbtc.sh                
 ```

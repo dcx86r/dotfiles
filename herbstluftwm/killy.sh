@@ -1,11 +1,10 @@
 #!/bin/dash
 
-rpath="$HOME/.config/herbstluftwm"
+bar_path="$HOME/.config/bar"
 
 {
 # start dzen panel
-	$rpath/wsi.pl -x 10 -y 7 -w 14 -h 13 -s 24 &
-#	$rpath/wsiu.pl -x 7 -y 0 -w 150 -h 30 &
+	$bar_path/bar.pl -x 0 -y 0 -w 1920 -h 30 &
 	pids=${pids:-$!}
 # wait for exit hooks
 	herbstclient -w '(quit_panel|reload)'

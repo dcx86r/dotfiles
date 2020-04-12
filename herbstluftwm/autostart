@@ -54,7 +54,7 @@ HCC keybind $Mod-Shift-f spawn sh $rpath/focus_mode.sh
 # spawn three windows in floating mode
 HCC keybind $Mod-Shift-k spawn st $rpath/stack.sh
 # take a screenshot
-HCC keybind $Mod-Shift-s spawn scrot -q 100
+HCC keybind $Mod-Shift-s spawn sh $rpath/scrot.sh
 # show weather forecast in notification window
 HCC keybind $Mod-Shift-w spawn notify-send -t 60000 \
 "Forecast" "$(perl $rpath/../conky/weather.pl)"
@@ -117,30 +117,30 @@ HCC keybind $Mod-i jumpto urgent
 HCC attr theme.tiling.reset 1
 HCC attr theme.floating.reset 1
 # frame border settings
-HCC set frame_border_active_color '#b66aff'
-HCC set frame_border_normal_color '#333366'
+HCC set frame_border_active_color '#af652f'
+HCC set frame_border_normal_color '#544b2e'
 HCC set frame_bg_normal_color '#171717'
-HCC set frame_bg_active_color '#669999'
-HCC set frame_border_width 10
+HCC set frame_bg_active_color '#746c48'
+HCC set frame_border_width 0
 HCC set always_show_frame 0
 HCC set frame_bg_transparent 1
 HCC set frame_transparent_width 0
 HCC set frame_gap 50
 HCC set frame_active_opacity 50
-HCC set frame_normal_opacity 50
+HCC set frame_normal_opacity 0
 
-HCC attr theme.active.color '#9A6CFF'
-HCC attr theme.normal.color '#3366cc'
-HCC attr theme.urgent.color '#dd0098'
-HCC attr theme.inner_width 2
-HCC attr theme.inner_color '#9A6CFF'
+HCC attr theme.active.color '#c8b55b'
+HCC attr theme.normal.color '#7b854e'
+HCC attr theme.urgent.color '#e4dc8c'
+HCC attr theme.inner_width 4
+HCC attr theme.inner_color '#6b5644'
 # window border settings
 HCC attr theme.border_width 4
-HCC attr theme.floating.border_width 8
+HCC attr theme.floating.border_width 4
 HCC attr theme.floating.outer_width 4
 HCC attr theme.floating.outer_color '#181818'
-HCC attr theme.active.inner_color '#0099cc'
-HCC attr theme.active.outer_color '#b66aff'
+HCC attr theme.active.inner_color '#98724c'
+HCC attr theme.active.outer_color '#af652f'
 HCC attr theme.background_color '#171717'
 
 HCC set window_gap 0
@@ -168,14 +168,14 @@ HC set tree_style '╾│ ├└╼─┐'
 HC pad 0 30 0 0 0
 
 # set wallpaper
-setroot -sc '#333399' 2>/dev/null
+setroot -c $HOME/rices/wallhaven-nk7qmq.jpg 2>/dev/null
 
 # launch and bg compositor unless active
 [ -z $(pidof compton) ] && \
 	compton -b --config "$rpath/../compton/compton.conf"
 
 # launch and bg (<- set in conky.conf) conky unless active
-[ -z $(pidof conky) ] && conky
+#[ -z $(pidof conky) ] && conky
 
 # run workspace indicator panel and manage reloading
 dash "$rpath/killy.sh" &
