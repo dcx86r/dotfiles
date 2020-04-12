@@ -27,7 +27,7 @@ $SIG{INT} = sub { kill( "HUP", -$$ ) };
 $Getopt::Std::STANDARD_HELP_VERSION = 1;
 
 sub HELP_MESSAGE {
-	say "Usage: perl wsiu.pl" . " -x n -y n -w n -h n\n";
+	say "Usage: perl bar.pl" . " -x n -y n -w n -h n\n";
 	say "Flags:\n"
 	  . "\t-x\t bar X-axis position\n"
 	  . "\t-y\t bar Y-axis position\n"
@@ -36,7 +36,7 @@ sub HELP_MESSAGE {
 }
 
 sub error {
-	open( my $fh, ">>", "/tmp/wsi.err.log" );
+	open( my $fh, ">>", "/tmp/bar.err.log" );
 	say $fh shift, shift;
 	exit 1;
 }
@@ -102,21 +102,21 @@ sub draw_bar {
 	return $bh;
 }
 
-sub get_vol { return qx|/home/dc/.config/conky/vol.sh| }
+sub get_vol { return qx|/home/dc/.config/scripts/vol.sh| }
 
 sub vol_data {
 	my $out = shift;
 	return sub { return $out };
 }
 
-sub get_lvs { return qx|/home/dc/.config/conky/lvscript.sh| }
+sub get_lvs { return qx|/home/dc/.config/scripts/lvscript.sh| }
 
 sub lvs_data {
 	my $out = shift;
 	return sub { return $out };
 }
 
-sub get_xbt { return qx|/home/dc/.config/conky/xbtc.sh USD| }
+sub get_xbt { return qx|/home/dc/.config/scripts/xbtc.sh USD| }
 
 sub xbt_data {
 	my $out = shift;
