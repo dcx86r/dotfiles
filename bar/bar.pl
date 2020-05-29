@@ -44,10 +44,9 @@ sub error {
 sub get_opts {
 	my $flags = "x:y:w:h:";
 	getopts( $flags, \my %opts )
-	  || HELP_MESSAGE() && error("bad flags");
+	  || HELP_MESSAGE() && exit 1;
 	foreach ( split( /:/, $flags ) ) {
-		defined $opts{$_} ? next : HELP_MESSAGE()
-		  && error("insufficient arguments");
+		defined $opts{$_} ? next : HELP_MESSAGE() && exit 1;
 	}
 	return \%opts;
 }
